@@ -30,13 +30,16 @@ public class Main {
 
         */
 
-         InputStream inputStream = clientSocket.getInputStream();
+         BufferedInputStream inputStream = new BufferedInputStream(clientSocket.getInputStream());
          byte[] messageSizeBytes = inputStream.readNBytes(4);
          byte[] apiKeyBytes = inputStream.readNBytes(2);
          byte[] apiVersion = inputStream.readNBytes(2);
          byte[] correlationIdBytes = inputStream.readNBytes(4);
 
          int correlationId = ByteBuffer.wrap(correlationIdBytes).getInt();
+
+
+         clientSocket.getOutputStream().write(messageSizeBytes);
 
          var response = ByteBuffer.allocate(4).putInt(correlationId).array();
          clientSocket.getOutputStream().write(response);
