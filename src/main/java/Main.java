@@ -1,26 +1,46 @@
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 
 public class Main {
   public static void main(String[] args){
-    // You can use print statements as follows for debugging, they'll be visible when running tests.
-    System.err.println("Logs from your program will appear here!");
-
-    // Uncomment this block to pass the first stage
 
      ServerSocket serverSocket = null;
      Socket clientSocket = null;
      int port = 9092;
      try {
        serverSocket = new ServerSocket(port);
-       // Since the tester restarts your program quite often, setting SO_REUSEADDR
-       // ensures that we don't run into 'Address already in use' errors
+
        serverSocket.setReuseAddress(true);
-       // Wait for connection from client.
        clientSocket = serverSocket.accept();
-       clientSocket.getOutputStream().write(new byte[]{0,0,0,0,0,0,0,7});
+
+       /*
+       The request contains:
+       message size: 4 bytes
+       request header:
+        request api key: 2 bytes
+        request api version: 2 bytes
+        correlation id: 4 bytes
+
+        Goal: Find correlation id and respond
+
+        */
+
+         InputStream inputStream = clientSocket.getInputStream();
+         byte[] messageSizeBytes = inputStream.readNBytes(4);
+         byte[] apiKeyBytes = inputStream.readNBytes(2);
+         byte[] apiVersion = inputStream.readNBytes(2);
+         byte[] correlationIdBytes = inputStream.readNBytes(4);
+
+         int correlationId = ByteBuffer.wrap(correlationIdBytes).getInt();
+
+         clientSocket.getOutputStream().write(ByteBuffer.allocate(4).putInt(correlationId).array());
+
+
      } catch (IOException e) {
        System.out.println("IOException: " + e.getMessage());
      } finally {
