@@ -38,7 +38,8 @@ public class Main {
 
          int correlationId = ByteBuffer.wrap(correlationIdBytes).getInt();
 
-         clientSocket.getOutputStream().write(ByteBuffer.allocate(4).putInt(correlationId).array());
+         var response = ByteBuffer.allocate(4).putInt(correlationId).array();
+         clientSocket.getOutputStream().write(response);
 
 
      } catch (IOException e) {
