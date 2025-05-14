@@ -1,3 +1,5 @@
+import common.ErrorCodes;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,7 +35,7 @@ public class Main {
          BufferedInputStream inputStream = new BufferedInputStream(clientSocket.getInputStream());
          byte[] messageSizeBytes = inputStream.readNBytes(4);
          byte[] apiKeyBytes = inputStream.readNBytes(2);
-         byte[] apiVersion = inputStream.readNBytes(2);
+         byte[] apiVersionBytes = inputStream.readNBytes(2);
          byte[] correlationIdBytes = inputStream.readNBytes(4);
 
          int correlationId = ByteBuffer.wrap(correlationIdBytes).getInt();
@@ -43,6 +45,11 @@ public class Main {
 
          var response = ByteBuffer.allocate(4).putInt(correlationId).array();
          clientSocket.getOutputStream().write(response);
+
+         short apiVersion = ByteBuffer.wrap(apiVersionBytes).getShort();
+         short errorCode = (short) (apiVersion>=0 && apiVersion<=4 ? 0: ErrorCodes.UNSUPPORTED_VERSION.getCode());
+         var errorCodeResponse = ByteBuffer.allocate(2).putShort(errorCode).array();
+         clientSocket.getOutputStream().write(errorCodeResponse);
 
 
      } catch (IOException e) {
