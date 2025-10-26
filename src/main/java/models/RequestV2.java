@@ -19,7 +19,7 @@ import java.nio.ByteBuffer;
 
 @AllArgsConstructor
 @Getter
-public class RequestHeaderV2 {
+public class RequestV2 {
 
      private int message_size;
      private short api_key;
@@ -28,7 +28,7 @@ public class RequestHeaderV2 {
 
 
 
-     public RequestHeaderV2 (BufferedInputStream inputStream) throws IOException {
+     public RequestV2 (BufferedInputStream inputStream) throws IOException {
           byte[] message_size_bytes = inputStream.readNBytes(4);
           this.message_size = this.convertTo(message_size_bytes, Integer.class);
           this.api_key = this.convertTo(inputStream.readNBytes(2), Short.class);

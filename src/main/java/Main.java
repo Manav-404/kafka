@@ -1,5 +1,7 @@
 import common.ErrorCodes;
-import models.RequestHeaderV2;
+import models.RequestV2;
+
+import lombok.*;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -23,7 +25,7 @@ public class Main {
        clientSocket = serverSocket.accept();
 
          BufferedInputStream inputStream = new BufferedInputStream(clientSocket.getInputStream());
-         RequestHeaderV2 headerV2 = new RequestHeaderV2(inputStream);
+         RequestV2 headerV2 = new RequestV2(inputStream);
 
 
          clientSocket.getOutputStream().write(ByteBuffer.allocate(4).putInt(headerV2.getMessage_size()).array());
